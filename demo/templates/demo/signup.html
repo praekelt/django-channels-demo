@@ -1,0 +1,15 @@
+{% extends 'demo/base.html' %}
+
+{% block content %}
+<form action="{% url 'demo:signup' %}" method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div>
+        {{ field.label_tag }}
+        {{ field }}
+    </div>
+    {% endfor %}
+    <button type="submit">Sign up</button>
+    <p>Already have an account? <a href="{% url 'demo:login' %}">Log in!</a></p>
+</form>
+{% endblock content %}
