@@ -1,13 +1,24 @@
-from django.contrib.auth import user_logged_in, user_logged_out
+from django.core import serializers
+from django.db.models.signals import post_save
 from django.dispatch import receiver
-from demo.models import LoggedInUser
+from demo.models import Article
+from demo.constants import SUBSCRIBER_GROUP_NAME
+
+from channels import Group
 
 
-@receiver(user_logged_in)
-def on_user_login(sender, **kwargs):
-    LoggedInUser.objects.get_or_create(user=kwargs.get('user'))
-
-
-@receiver(user_logged_out)
-def on_user_logout(sender, **kwargs):
-    LoggedInUser.objects.filter(user=kwargs.get('user')).delete()
+@receiver(post_save, sender=Article)
+def publish(sender, instance, created, **kwargs):
+    """
+    We publish new articles to the subscriber group.
+    :param sender: The sender class (Article in this case, because of the 
+    filter applied in the @receiver decorator)
+    :param instance: The Article instance that was saved
+    :param created: A flag indicating whether the instance was created, 
+    or already existed.
+    :param kwargs: Miscellaneous keyword arguments
+    """
+    if created:
+        Group(SUBSCRIBER_GROUP_NAME).send({
+            "text": serializers.serialize("json", [instance])
+        })

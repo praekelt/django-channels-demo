@@ -1,0 +1,1 @@
+SUBSCRIBER_GROUP_NAME = "subscribers"

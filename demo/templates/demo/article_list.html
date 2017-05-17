@@ -1,0 +1,46 @@
+{% extends "demo/base.html" %}
+
+{% block content %}
+    <h1>Dynamic Articles</h1>
+    <br>
+    <table id="articles">
+        <tr><th>Title</th><th>Body</th></tr>
+    </table>
+    <b id="notification"</b>
+{% endblock content %}
+
+{% block script %}
+<script>
+function appendArticle(article, index) {
+    console.log(article);
+    var table = document.getElementById("articles");
+    var row = table.insertRow();
+    var title_cell = row.insertCell();
+    var text_cell = row.insertCell();
+    title_cell.innerText = article["fields"]["title"];
+    text_cell.innerText= article["fields"]["body"];
+}
+
+var socket = new WebSocket('ws://' + window.location.host + '/users/');
+
+socket.onopen = function open() {
+    console.log("WebSocket connection created.");
+};
+
+socket.onmessage = function message(event) {
+    var articles = JSON.parse(event.data);
+    articles.forEach(appendArticle)
+};
+
+socket.onclose = function close() {
+    console.log("Websocket connection closed.")
+    var notification = document.getElementById("notification");
+    notification.innerText = "The websocket was closed. Refresh the page or ask the developer to use the ReconnectingWebSocket class"
+};
+
+if (socket.readyState == WebSocket.OPEN) {
+    socket.onopen();
+}
+
+</script>
+{% endblock script %}
