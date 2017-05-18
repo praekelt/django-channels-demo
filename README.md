@@ -14,8 +14,14 @@ Django signals are used to catch `Article` creation events. The event handler se
 
 The `Article` models are serialised using Django's built-in JSON serialiser.
 
+## Things to note
+* Delivery is nto quarenteed and I have seen messages going missing under (minor) load. Ref: http://channels.readthedocs.io/en/stable/faqs.html#why-isn-t-there-guaranteed-delivery-a-retry-mechanism
 
 ## TODO
 * Webscoket ping-pong
 * Reconnecting JavaSCript websockets: https://github.com/joewalnes/reconnecting-websocket
+* Tests using [ChannelTestCase](http://channels.readthedocs.io/en/stable/testing.html#channeltestcase)
+* Investigate handling of https://github.com/django/daphne/issues/63 (Request Queue Full), which affects both the HTTP and websocket requests.
+* `asgi_redis` [config](https://github.com/django/asgi_redis/#usage)
+
 

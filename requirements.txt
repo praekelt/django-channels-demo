@@ -1,4 +1,5 @@
 django
 channels
 asgi_redis
-
+websocket-client
+djangorestframework

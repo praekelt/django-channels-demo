@@ -21,7 +21,7 @@ function appendArticle(article, index) {
     text_cell.innerText= article["fields"]["body"];
 }
 
-var socket = new WebSocket('ws://' + window.location.host + '/users/');
+var socket = new WebSocket('ws://' + window.location.host + '/articles/');
 
 socket.onopen = function open() {
     console.log("WebSocket connection created.");

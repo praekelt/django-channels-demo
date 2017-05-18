@@ -15,8 +15,29 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from rest_framework import routers, serializers, viewsets
+from demo.models import Article
+
+
+# Serializers define the API representation.
+class ArticleSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Article
+        fields = "__all__"
+
+
+# ViewSets define the view behavior.
+class ArticleViewSet(viewsets.ModelViewSet):
+    queryset = Article.objects.all()
+    serializer_class = ArticleSerializer
+
+# Routers provide an easy way of automatically determining the URL conf.
+router = routers.DefaultRouter()
+router.register(r"articles", ArticleViewSet)
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^', include('demo.urls', namespace='demo')),
+    url(r"^api/", include(router.urls)),
+    url(r"^api/", include("rest_framework.urls", namespace="rest_framework")),
+    url(r"^admin/", admin.site.urls),
+    url(r"^demo/", include("demo.urls", namespace="demo")),
 ]

@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'demo'
+    'rest_framework',
+    'demo',
 ]
 
 CHANNEL_LAYERS = {
@@ -46,6 +47,14 @@ CHANNEL_LAYERS = {
         'BACKEND': 'asgi_redis.RedisChannelLayer',
         'CONFIG': {
             'hosts': [('localhost', 6379)],
+            'channel_capacity': {
+                "http.request": 300,
+                "http.response!*": 300,
+                "websocket.receive": 300,
+                "websocket.send!*": 300,
+                "websocket.connect": 300,
+                "websocket.disconnect": 300,
+            }
         },
         'ROUTING': 'demo.routing.channel_routing',
     }
