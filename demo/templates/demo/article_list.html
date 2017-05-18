@@ -1,10 +1,16 @@
 {% extends "demo/base.html" %}
 
 {% block content %}
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
     <h1>Dynamic Articles</h1>
     <br>
-    <table id="articles">
-        <tr><th>Title</th><th>Body</th></tr>
+    <table id="articles" cellspacing="wide">
+        <tr><th>ID</th><th>Title</th><th>Body</th></tr>
     </table>
     <b id="notification"</b>
 {% endblock content %}
@@ -15,8 +21,10 @@ function appendArticle(article, index) {
     console.log(article);
     var table = document.getElementById("articles");
     var row = table.insertRow();
-    var title_cell = row.insertCell();
-    var text_cell = row.insertCell();
+    var id_cell = row.insertCell(0)
+    var title_cell = row.insertCell(1);
+    var text_cell = row.insertCell(2);
+    id_cell.innerText = article["pk"]
     title_cell.innerText = article["fields"]["title"];
     text_cell.innerText= article["fields"]["body"];
 }
@@ -30,6 +38,7 @@ socket.onopen = function open() {
 socket.onmessage = function message(event) {
     var articles = JSON.parse(event.data);
     articles.forEach(appendArticle)
+    document.body.scrollTop = document.body.scrollHeight;
 };
 
 socket.onclose = function close() {

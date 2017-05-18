@@ -35,7 +35,7 @@
                 <websocket type="close"></websocket>
             </request>
         </session>
-        <session name="publisher" weight="1" type="ts_http">
+        <session name="publisher" weight="4" type="ts_http">
             <request subst="true">
                 <http url="/api/articles/" method="POST" version="1.1"
                     contents="title=%%ts_user_server:get_unique_id%%&amp;body=This+is+the+body">
