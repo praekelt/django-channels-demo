@@ -10,3 +10,5 @@ run: virtualenv
 	# python manage.py runserver --noworker
 	# python manage.py runworker
 
+tsung:
+	tsung -k -f experiments/tsung_websocket.xml start

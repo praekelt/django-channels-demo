@@ -1,4 +1,5 @@
 {% extends "demo/base.html" %}
+{% load static %}
 
 {% block content %}
     <style>
@@ -12,22 +13,52 @@
     <table id="articles" cellspacing="wide">
         <tr><th>ID</th><th>Title</th><th>Body</th></tr>
     </table>
-    <b id="notification"</b>
+    <b id="notification"></b>
 {% endblock content %}
 
 {% block script %}
+<script src="{% static "channels/js/websocketbridge.js" %}"></script>
 <script>
-function appendArticle(article, index) {
-    console.log(article);
-    var table = document.getElementById("articles");
-    var row = table.insertRow();
-    var id_cell = row.insertCell(0)
-    var title_cell = row.insertCell(1);
-    var text_cell = row.insertCell(2);
-    id_cell.innerText = article["pk"]
-    title_cell.innerText = article["fields"]["title"];
-    text_cell.innerText= article["fields"]["body"];
-}
+    function appendArticle(article, index) {
+        console.log(article);
+        var table = document.getElementById("articles");
+        var row = table.insertRow();
+        var id_cell = row.insertCell(0);
+        var title_cell = row.insertCell(1);
+        var text_cell = row.insertCell(2);
+        id_cell.innerText = article["pk"];
+        title_cell.innerText = article["fields"]["title"];
+        text_cell.innerText= article["fields"]["body"];
+    }
+
+    var retry_counter = 0;
+    const webSocketBridge = new channels.WebSocketBridge();
+    webSocketBridge.connect('/articles');
+
+    webSocketBridge.socket.addEventListener('open', function() {
+        console.log("Connected to WebSocket");
+        retry_counter = 0;
+        var notification = document.getElementById("notification");
+        notification.innerText = "";
+        var table = document.getElementById("articles");
+        // Delete rows in descending order to prevent concurrent updates (appends) from
+        // messing ordering, etc.
+        for (var i=table.rows.length-1; i>=0; i--) {
+            table.deleteRow(i);
+        }
+    });
+    webSocketBridge.socket.addEventListener('close', function() {
+        console.log("Websocket connection closed.");
+        retry_counter += 1;
+        var notification = document.getElementById("notification");
+        notification.innerText = "The websocket was closed. Trying to reconnect (attempt " + retry_counter + ")..."
+    });
+    webSocketBridge.listen(function(articles, stream) {
+        articles.forEach(appendArticle);
+        document.body.scrollTop = document.body.scrollHeight;
+    });
+
+/* The raw websocket alternative implementation (without reconnect):
 
 var socket = new WebSocket('ws://' + window.location.host + '/articles/');
 
@@ -50,6 +81,6 @@ socket.onclose = function close() {
 if (socket.readyState == WebSocket.OPEN) {
     socket.onopen();
 }
-
+*/
 </script>
 {% endblock script %}
