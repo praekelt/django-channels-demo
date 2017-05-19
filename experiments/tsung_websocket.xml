@@ -6,7 +6,7 @@
     </clients>
 
     <servers>
-        <server host="127.0.0.1" port="8000" type="tcp" />
+        <server host="127.0.0.1" port="8000" type="websocket" />
     </servers>
 
     <load>
@@ -17,7 +17,7 @@
 
     <options>
         <option name="global_number" value="1000"></option>
-        <option name="websocket_path" value="articles"/>
+        <option name="websocket_path" value="/articles"/>
     </options>
 
     <sessions>

@@ -28,5 +28,4 @@ The `Article` models are serialised using Django's built-in JSON serialiser.
 * Tests using [ChannelTestCase](http://channels.readthedocs.io/en/stable/testing.html#channeltestcase)
 * Investigate handling of https://github.com/django/daphne/issues/63 (Request Queue Full), which affects both the HTTP and websocket requests. (Done...this was related to the `daphne.response` channel size.)
 * `asgi_redis` [config](https://github.com/django/asgi_redis/#usage)
-* Note that the Tsung tests currently do not work via `nginx`.
 
