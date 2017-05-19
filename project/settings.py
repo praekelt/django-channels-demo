@@ -15,7 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
@@ -25,7 +24,7 @@ SECRET_KEY = '7zcni=q4*oo1w0h_i!+2mh%#8k5de(-3)vsopo0hf#y=hya%pk'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "10.0.0.15"]
 
 
 # Application definition
@@ -48,12 +47,15 @@ CHANNEL_LAYERS = {
         'CONFIG': {
             'hosts': [('localhost', 6379)],
             'channel_capacity': {
-                "http.request": 300,
-                "http.response!*": 300,
-                "websocket.receive": 300,
-                "websocket.send!*": 300,
-                "websocket.connect": 300,
-                "websocket.disconnect": 300,
+                "daphne.response*": 2000,  # Important for stability
+                "http.connect": 2000,
+                "http.request": 2000,
+                "http.response*": 2000,
+                "http.disconnect": 2000,
+                "websocket.receive": 2000,
+                "websocket.send*": 2000,
+                "websocket.connect": 2000,
+                "websocket.disconnect": 2000,
             }
         },
         'ROUTING': 'demo.routing.channel_routing',
