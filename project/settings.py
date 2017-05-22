@@ -36,10 +36,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'celery',
     'channels',
     'rest_framework',
     'demo',
 ]
+
 
 CHANNEL_LAYERS = {
     'default': {
@@ -47,7 +49,7 @@ CHANNEL_LAYERS = {
         'CONFIG': {
             'hosts': [('localhost', 6379)],
             'channel_capacity': {
-                "daphne.response*": 2000,  # Important for stability
+                "daphne.response*": 20000,  # Important for stability
                 "http.connect": 2000,
                 "http.request": 2000,
                 "http.response*": 2000,
@@ -135,6 +137,10 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+#CELERY_BROKER_URL = "amqp://celery:Thol2yie@localhost/demo"
+CELERY_USE_TZ = USE_TZ
+CELERY_TIMEZONE = TIME_ZONE
 
 
 # Static files (CSS, JavaScript, Images)

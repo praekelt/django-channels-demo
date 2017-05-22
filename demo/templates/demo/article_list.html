@@ -53,9 +53,19 @@
         var notification = document.getElementById("notification");
         notification.innerText = "The websocket was closed. Trying to reconnect (attempt " + retry_counter + ")..."
     });
-    webSocketBridge.listen(function(articles, stream) {
-        articles.forEach(appendArticle);
-        document.body.scrollTop = document.body.scrollHeight;
+    webSocketBridge.listen(function(payload, stream) {
+        if ("ping" in payload) {
+            console.log("ping");
+            var notification = document.getElementById("notification");
+            var now = new Date();
+            var display = now.toLocaleDateString() + " " + now.toLocaleTimeString('en-US', {
+                hour12: false, hour: "numeric", minute: "numeric", second: "numeric"});
+            notification.innerText = display;
+        } else {
+            var articles = payload;
+            articles.forEach(appendArticle);
+            document.body.scrollTop = document.body.scrollHeight;
+        }
     });
 
 /* The raw websocket alternative implementation (without reconnect):

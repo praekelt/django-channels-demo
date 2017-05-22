@@ -2,7 +2,7 @@
 <!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd" []>
 <tsung loglevel="notice" version="1.0">
     <clients>
-        <client host="localhost" use_controller_vm="true" maxusers="1000" />
+        <client host="localhost" use_controller_vm="true" maxusers="4000" />
     </clients>
 
     <servers>
@@ -11,14 +11,17 @@
              websocket, though.
              Remember to change the port in the POST session as well.
         -->
-        <server host="127.0.0.1" port="8000" type="websocket" weight="0"/>
+        <server host="127.0.0.1" port="8000" type="websocket" weight="1"/>
         <!-- Use type="tcp" when connecting directly to the application. -->
-        <server host="127.0.0.1" port="8001" type="tcp" weight="0"/>
+        <server host="127.0.0.1" port="8000" type="tcp" weight="0"/>
     </servers>
 
     <load>
         <arrivalphase phase="1" duration="120" unit="second">
-            <users maxnumber="1000" arrivalrate="10" unit="second" />
+            <users maxnumber="1400" arrivalrate="10" unit="second" />
+        </arrivalphase>
+        <arrivalphase phase="2" duration="120" unit="second">
+            <users maxnumber="4000" arrivalrate="20" unit="second" />
         </arrivalphase>
     </load>
 
@@ -29,11 +32,17 @@
     </options>
 
     <sessions>
-        <session name="websocket-connections" weight="10" type="ts_websocket">
+        <session name="websocket-connections" weight="10" type="ts_http">
+            <request subst="true">
+                <http url="/admin/login/" method="GET" version="1.1">
+                    <www_authenticate userid="cobusc" passwd="foobarpas"/>
+                </http>
+            </request>
+            <change_type new_type="ts_websocket" host="127.0.0.1" port="8000" server_type="tcp" restore="true" store="true" bidi="true"/>
             <request>
                 <websocket type="connect"></websocket>
             </request>
-            <request>
+            <!--            <request>
                 <websocket type="message" frame="text" ack="no_ack">{"greeting": "Hello"}</websocket>
             </request>
             <request>
@@ -41,7 +50,7 @@
                 <match do="loop" sleep_loop="5" when="nomatch">ok</match>
                 <websocket type="message" frame="text" ack="no_ack">{"greeting":"How are you?"}
                 </websocket>
-            </request>
+            </request> -->
             <thinktime value="150" random="false"></thinktime>
             <request>
                 <websocket type="close"></websocket>
