@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 import logging
 
 from django.core import serializers
@@ -9,6 +10,7 @@ from channels import Group
 
 from demo.constants import SUBSCRIBER_GROUP_NAME
 from demo.models import Article
+from channels.message import Message
 
 logger = logging.getLogger()
 
@@ -32,7 +34,7 @@ def ws_connect(message):
     # Add the user to the subscriber group
     Group(SUBSCRIBER_GROUP_NAME).add(message.reply_channel)
     SUBSCRIBER_COUNT += 1
-    print("Group size = {}".format(SUBSCRIBER_COUNT))
+    print("Connect: Group size = {}".format(SUBSCRIBER_COUNT))
 
 
 def ws_disconnect(message):
@@ -44,9 +46,12 @@ def ws_disconnect(message):
     global SUBSCRIBER_COUNT
     Group(SUBSCRIBER_GROUP_NAME).discard(message.reply_channel)
     SUBSCRIBER_COUNT -= 1
-    print("Group size = {}".format(SUBSCRIBER_COUNT))
+    print("Disconnect: Group size = {}".format(SUBSCRIBER_COUNT))
 
 
 def ws_receive(message):
-    data = json.loads(message.content["text"])
-    print("Someone said: '{}'".format(data["greeting"]))
+    pprint(message)
+    pprint(message.content)
+    if "text" in message.content:
+        data = json.loads(message.content["text"])
+        print("Someone said: '{}'".format(data["greeting"]))
