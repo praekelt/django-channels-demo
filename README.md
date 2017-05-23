@@ -16,8 +16,20 @@ Django signals are used to catch `Article` creation events. The event handler se
 
 The `Article` models are serialised using Django's built-in JSON serialiser.
 
+
+In production one can split things up into a setup such as:
+* `nginx` as a loadbalalancer which reverse proxies to
+* one or more `daphne` instances (`python manage.py runserver --noworker`), which sticks requests and reads responses from
+* a `redis` cluster.
+* Then there must be on or more workers (`manage.py runworker --threads X`), which can be configured to only handle certain events, e.g.
+```
+manage.py runworker --threads 10 --only-channels "http*"
+manage.py runworker --threads 30 --only-channels "websocket*"
+```
+
 ## Things to note
 * Delivery is not guarenteed and I have seen messages going missing under (minor) load. Ref: http://channels.readthedocs.io/en/stable/faqs.html#why-isn-t-there-guaranteed-delivery-a-retry-mechanism
+* Message ordering is not guaranteed and I have seen out of order delivery under load. One can force orderer delivery, but it comes with an overhead cost.
 * The `websocketbridge.js` library bundled with `channels` has a reconnect retry strategy. This is now used.
 * When configuring the `channel_capacity` it is important to set a value for `daphne.response*`. This was not clear in the documentation.
 * Redis gets polluted with keys that are never (from what I observed) removed (e.g. `asgi-meta:daphne.response.ckLvSTDSRG!:messages_count`. These may be due to errors occurring, but it is an operational aspect to keep in mind.
