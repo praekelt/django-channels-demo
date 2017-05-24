@@ -2,7 +2,7 @@
 <!DOCTYPE tsung SYSTEM "/usr/share/tsung/tsung-1.0.dtd" []>
 <tsung loglevel="notice" version="1.0">
     <clients>
-        <client host="localhost" use_controller_vm="true" maxusers="4000" />
+        <client host="localhost" use_controller_vm="true" maxusers="2000" />
     </clients>
 
     <servers>
@@ -13,51 +13,51 @@
         -->
         <server host="127.0.0.1" port="8000" type="websocket" weight="1"/>
         <!-- Use type="tcp" when connecting directly to the application. -->
-        <server host="127.0.0.1" port="8000" type="tcp" weight="0"/>
+        <!-- <server host="127.0.0.1" port="8001" type="tcp" weight="1"/> -->
     </servers>
 
     <load>
-        <arrivalphase phase="1" duration="120" unit="second">
-            <users maxnumber="1400" arrivalrate="10" unit="second" />
+        <arrivalphase phase="1" duration="60" unit="second">
+            <users maxnumber="400" arrivalrate="5" unit="second" />
         </arrivalphase>
         <arrivalphase phase="2" duration="120" unit="second">
-            <users maxnumber="2000" arrivalrate="20" unit="second" />
+            <users maxnumber="1000" arrivalrate="5" unit="second" />
         </arrivalphase>
     </load>
 
     <options>
-        <option name="global_number" value="1000"></option>
         <option name="websocket_path" value="/articles"/>
-        <!-- <option name="websocket_frame" value="text"/> -->
+        <!-- <option name="websocket_frame" value="text"/> Do not set here. It breaks websocket connects when using type=websocket -->
     </options>
 
     <sessions>
-        <session name="websocket-connections" weight="10" type="ts_http">
-            <request subst="true">
+        <!--<session name="websocket-connections" weight="10" type="ts_http">-->
+        <session name="websocket_connections" weight="10" type="ts_websocket">
+            <!--            <request subst="true">
                 <http url="/admin/login/" method="GET" version="1.1">
                     <www_authenticate userid="cobusc" passwd="foobarpas"/>
                 </http>
             </request>
-            <change_type new_type="ts_websocket" host="127.0.0.1" port="8000" server_type="tcp" restore="true" store="true" bidi="true"/>
+            <change_type new_type="ts_websocket" host="127.0.0.1" port="8000" server_type="websocket" restore="true" store="true" bidi="true"/> -->
             <request>
                 <websocket type="connect"></websocket>
             </request>
-            <!--            <request>
+            <!-- <request>
                 <websocket type="message" frame="text" ack="no_ack">{"greeting": "Hello"}</websocket>
-            </request>
-            <request>
+            </request> -->
+            <!-- <request>
                 <match do="log" when="nomatch">ok</match>
                 <match do="loop" sleep_loop="5" when="nomatch">ok</match>
                 <websocket type="message" frame="text" ack="no_ack">{"greeting":"How are you?"}
                 </websocket>
             </request> -->
-            <thinktime value="150" random="false"></thinktime>
+            <thinktime value="120" random="false"></thinktime>
             <request>
                 <websocket type="close"></websocket>
             </request>
         </session>
         <session name="publisher" weight="1" type="ts_http">
-            <change_type new_type="ts_http" host="127.0.0.1" port="8000" server_type="tcp" restore="true" store="true" bidi="true"/>
+            <!-- <change_type new_type="ts_http" host="127.0.0.1" port="8000" server_type="tcp" restore="true" store="true" bidi="true"/> -->
             <request subst="true">
                 <http url="/api/articles/" method="POST" version="1.1"
                     contents="title=%%ts_user_server:get_unique_id%%&amp;body=Lorem+ipsum+dolor+sit+amet%2C+consectetur+adipiscing+elit.+Nulla+et+dolor+orci.+Praesent+non+quam+porta%2C+suscipit+dui+sit+amet%2C+condimentum+lacus.+Vestibulum+vehicula%2C+turpis+et+tincidunt+condimentum%2C+dui+dui+ultrices+mi%2C+posuere+dapibus+enim+odio+non+felis.+Vivamus+vitae+nulla+vehicula%2C+fermentum+odio+non%2C+vehicula+diam.+Nullam+vitae+lacus+tortor.+Integer+vehicula+rutrum+porta.+Donec+mollis+scelerisque+lorem+vel+suscipit.+Aenean+elit+magna%2C+convallis+sed+orci+ut%2C+tempus+euismod+diam.%0A%0AMaecenas+velit+massa%2C+scelerisque+et+rutrum+sed%2C+scelerisque+vel+dolor.+Fusce+diam+neque%2C+aliquam+eget+velit+a%2C+convallis+euismod+ligula.+Suspendisse+nec+dapibus+arcu.+Vestibulum+id+leo+enim.+Ut+libero+arcu%2C+imperdiet+et+luctus+at%2C+mattis+vel+diam.+Vivamus+porttitor+nibh+purus%2C+lacinia+aliquet+leo+blandit+accumsan.+In+mi+nunc%2C+bibendum+vel+sapien+quis%2C+rhoncus+vehicula+nunc.+In+blandit+faucibus+euismod.+Orci+varius+natoque+penatibus+et+magnis+dis+parturient+montes%2C+nascetur+ridiculus+mus.%0A%0AUt+eu+ultrices+elit.+Donec+in+faucibus+quam.+Aliquam+lobortis+turpis+quis+ante+pulvinar%2C+non+ullamcorper+purus+efficitur.+Nunc+nec+diam+a+orci+luctus+viverra.+Class+aptent+taciti+sociosqu+ad+litora+torquent+per+conubia+nostra%2C+per+inceptos+himenaeos.+Integer+id+aliquet+risus.+Nam+maximus+tincidunt+placerat.+Class+aptent+taciti+sociosqu+ad+litora+torquent+per+conubia+nostra%2C+per+inceptos+himenaeos.+Morbi+sit+amet+sem+non+dui+laoreet+iaculis+a+quis+felis.+Cras+eleifend+imperdiet+sem+vel+auctor.+Vestibulum+ac+venenatis+purus.%0A%0AQuisque+justo+ipsum%2C+varius+at+gravida+vel%2C+placerat+sit+amet+tellus.+Integer+enim+sem%2C+venenatis+at+massa+eget%2C+sodales+pharetra+est.+Duis+pharetra+massa+nec+tellus+dapibus%2C+id+aliquam+lacus+tincidunt.+Mauris+pretium+lectus+tortor%2C+ac+elementum+erat+vulputate+non.+Aenean+aliquet+molestie+magna+ac+pellentesque.+Maecenas+pharetra%2C+libero+quis+vulputate+tempus%2C+urna+neque+dictum+eros%2C+vitae+euismod+quam+enim+sit+amet+quam.+Aliquam+ut+risus+et+sem+porttitor+malesuada+et+sed+sapien.+Vivamus+tristique+ornare+augue+eget+ultricies.+Praesent+vel+convallis+sapien.+Cras+eget+augue+arcu.+Aenean+euismod+mollis+condimentum.+Sed+nec+placerat+eros.+In+sed+nulla+interdum%2C+ultricies+ligula+quis%2C+suscipit+diam.+Orci+varius+natoque+penatibus+et+magnis+dis+parturient+montes%2C+nascetur+ridiculus+mus.+Ut+id+arcu+nec+urna+porttitor+commodo.+Donec+pellentesque+libero+massa%2C+ac+lobortis+sem+ultricies+vel.%0A%0APhasellus+sed+scelerisque+lectus%2C+eu+congue+purus.+Curabitur+accumsan+sem+id+metus+volutpat%2C+eu+aliquam+quam+tincidunt.+Vestibulum+consectetur+vehicula+tellus+sed+aliquet.+Morbi+posuere+nisi+turpis%2C+nec+sodales+nibh+elementum+ut.+Proin+nec+ullamcorper+eros%2C+ut+sollicitudin+velit.+Praesent+pellentesque+mattis+felis%2C+non+pellentesque+nisi+condimentum+quis.+Nulla+sit+amet+est+interdum%2C+aliquet+ex+ut%2C+luctus+velit.+Suspendisse+sodales+tincidunt+venenatis.+Nunc+tempor+ullamcorper+velit.+Aenean+efficitur+sollicitudin+porttitor.">
