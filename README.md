@@ -34,7 +34,12 @@ manage.py runworker --threads 30 --only-channels "websocket*"
 * When configuring the `channel_capacity` it is important to set a value for `daphne.response*`. This was not clear in the documentation.
 * Redis gets polluted with keys that are never (from what I observed) removed (e.g. `asgi-meta:daphne.response.ckLvSTDSRG!:messages_count`. These may be due to errors occurring, but it is an operational aspect to keep in mind.
 
-
+## Artillery
+There is experimental support for [artillery](https://artillery.io).
+```
+npm install -g artillery
+artillery run example/artillery.json
+```
 
 ## TODO
 * Tests using [ChannelTestCase](http://channels.readthedocs.io/en/stable/testing.html#channeltestcase)
