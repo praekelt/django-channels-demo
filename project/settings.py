@@ -58,7 +58,8 @@ CHANNEL_LAYERS = {
                 "websocket.send*": 2000,
                 "websocket.connect": 2000,
                 "websocket.disconnect": 2000,
-            }
+            },
+            'group_expiry': 300  # Default 86400, but recommended to be lower
         },
         'ROUTING': 'demo.routing.channel_routing',
     }
